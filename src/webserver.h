@@ -9,6 +9,7 @@ class WebServer : public GlobalServer
 {
 public:
     WebServer();
+    WebServer(int privilege, QString password, QStringList authNameList);
     ~WebServer();
     bool Start(int port) override;
     bool Stop() override;

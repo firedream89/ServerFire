@@ -8,9 +8,6 @@ class GlobalServer : public QObject
 {
     Q_OBJECT
 
-    enum NetworkError {noError, passwordError, dataError};
-    enum Privilege {Admin, User};
-    enum Type {TCP, WebSocket};
     enum AuthStep {clientKey, passwordOk, ready};
 
 public:
@@ -20,6 +17,11 @@ public:
     virtual bool SendToClient(int idClient, QString data) = 0;
     virtual bool DisconnectClient(int idClient, QString reason) = 0;
     void SetCrypto(int keySize, int codeSize, int charFormat);
+    void SetAuthName(bool activate) { authName = activate; }
+    void SetPassword(QString passwd) { password = passwd; }
+    void SetPrivilege(int priv) { if(priv == Admin || priv == User) privilege = priv; }
+    void SetAuthNameList(QStringList list);
+    bool AddAuthName(QString name);
 
 private slots:
     virtual void NewConnexion() = 0;
@@ -33,7 +35,6 @@ private:
     bool Auth(int client, QString data);
     QMap<QString, int> clientAuth;
     int privilege;
-    int type;
     CryptoFire *crypto;
     bool authName;
     QStringList authNameList;
@@ -43,6 +44,12 @@ protected:
     void Init();
     void ReceiptDataFromClient(int client, QString data);
     bool ClientDisconnected(int idClient);
+    int type;
+
+    enum NetworkError {noError, passwordError, dataError};
+    enum Privilege {Admin, User};
+    enum Type {TCP, Web};
+
 
 };
 

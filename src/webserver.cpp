@@ -3,6 +3,19 @@
 WebServer::WebServer()
 {
     #define className "WebServeur"
+    type = Web;
+
+    Init();
+}
+
+WebServer::WebServer(int priv, QString passwd, QStringList authNameList)
+{
+    SetPrivilege(priv);
+    SetPassword(passwd);
+    SetAuthNameList(authNameList);
+
+    #define className "WebServeur"
+    type = Web;
 
     Init();
 }

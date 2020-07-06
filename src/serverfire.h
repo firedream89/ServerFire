@@ -9,6 +9,7 @@ class ServerFire : public QObject
 
 public:
     explicit ServerFire(QObject *parent = nullptr);
+    void Test();
 };
 
 #endif // SERVERFIRE_H

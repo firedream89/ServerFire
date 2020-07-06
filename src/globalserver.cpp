@@ -66,7 +66,7 @@ bool GlobalServer::Auth(int client, QString data)
     default:
         //newConnexion
         if(!crypto->Add_Encrypted_Key(clientStr,password,data)) {
-            DisconnectClient(client,"Encrypt key failed!");
+            DisconnectClient(client,"Fail to encrypt key !");
             return false;
         }
         QString key = crypto->Get_Key();
@@ -76,4 +76,21 @@ bool GlobalServer::Auth(int client, QString data)
         }
     }
     return false;
+}
+
+bool GlobalServer::AddAuthName(QString name)
+{
+     if(authNameList.contains(name))
+         return false;
+
+     authNameList.append(name);
+     return true;
+}
+
+void GlobalServer::SetAuthNameList(QStringList list)
+{
+    if(!list.isEmpty()) {
+        authName = true;
+    }
+    authNameList = list;
 }

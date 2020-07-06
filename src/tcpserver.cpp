@@ -1,8 +1,21 @@
-#include "tcpserver.h"
+﻿#include "tcpserver.h"
 
 TCPServer::TCPServer()
 {
     #define className "TCPServeur"
+    type = TCP;
+
+    Init();
+}
+
+TCPServer::TCPServer(int priv, QString passwd, QStringList authNameList)
+{
+    SetPrivilege(priv);
+    SetPassword(passwd);
+    SetAuthNameList(authNameList);
+
+    #define className "TCPServeur"
+    type = TCP;
 
     Init();
 }

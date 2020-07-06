@@ -10,6 +10,7 @@ class TCPServer : public GlobalServer
 
 public:
     TCPServer();
+    TCPServer(int priv, QString passwd, QStringList authNameList);
     ~TCPServer();
     bool Start(int port) override;
     bool Stop() override;
