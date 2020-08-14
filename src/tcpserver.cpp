@@ -2,22 +2,31 @@
 
 TCPServer::TCPServer()
 {
+    Init();
+
     #define className "TCPServeur"
     type = TCP;
+    dataSize = 0;
+    SetPrivilege(User);
 
-    Init();
+    server = new QTcpServer;
+    connect(server, &QTcpServer::newConnection, this, &TCPServer::NewConnexion);
 }
 
 TCPServer::TCPServer(int priv, QString passwd, QStringList authNameList)
 {
+    Init();
+
     SetPrivilege(priv);
     SetPassword(passwd);
     SetAuthNameList(authNameList);
 
     #define className "TCPServeur"
     type = TCP;
+    dataSize = 0;
 
-    Init();
+    server = new QTcpServer;
+    connect(server, &QTcpServer::newConnection, this, &TCPServer::NewConnexion);
 }
 
 TCPServer::~TCPServer()
@@ -36,8 +45,7 @@ bool TCPServer::Start(int port)
 
 bool TCPServer::Stop()
 {
-    QTcpSocket *socket;
-    foreach (socket, client) {
+    for(QTcpSocket *socket : client.values()) {
         socket->close();
         socket->deleteLater();
     }
@@ -50,13 +58,17 @@ void TCPServer::NewConnexion()
 {
     while(server->hasPendingConnections())
     {
+        qDebug() << "new connexion";
         QTcpSocket *newCo = server->nextPendingConnection();
         newCo->setParent(server);
 
         connect(newCo,&QTcpSocket::readyRead,this,&TCPServer::ReceiptData);
         connect(newCo,&QTcpSocket::disconnected,this,&TCPServer::Disconnect);
 
-        client.insert(client.lastKey()+1,newCo);
+        if(client.isEmpty())
+            client.insert(0,newCo);
+        else
+            client.insert(client.lastKey()+1,newCo);
     }
 }
 
@@ -113,7 +125,6 @@ void TCPServer::ReceiptData()
                  return;
             in >> dataSize;
         }
-
         if(socket->bytesAvailable() < dataSize)
             return;
 
@@ -132,6 +143,18 @@ bool TCPServer::DisconnectClient(int idClient, QString reason)
     QTcpSocket *socket = client.value(idClient);
     socket->close();
     client.remove(idClient);
+    socket->deleteLater();
+
+    emit Info(className, "Client disconnected : " + reason);
+    qDebug() << "Disconnected";
 
     return true;
+}
+
+QStringList TCPServer::InfoServer()
+{
+    QStringList info = GlobalServer::InfoServer();
+    info.append(QString::number(server->serverPort()));
+    info.append(QString::number(client.count()));
+    return info;
 }

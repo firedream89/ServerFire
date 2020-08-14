@@ -10,6 +10,7 @@ void GlobalServer::Init()
 void GlobalServer::SetCrypto(int keySize, int codeSize, int charFormat)
 {
     crypto = new CryptoFire(keySize, codeSize, charFormat);
+    crypto->Add_Encrypted_Key("server",password);
 }
 
 void GlobalServer::ReceiptDataFromClient(int client, QString data)
@@ -19,6 +20,7 @@ void GlobalServer::ReceiptDataFromClient(int client, QString data)
 
     QString clientStr = (privilege == Admin) ? "A" : "U";
     clientStr += QString::number(client);
+    crypto->Decrypt_Data(data,clientStr);
 
     emit Receipt(clientStr, data);
 }
@@ -33,13 +35,16 @@ bool GlobalServer::ClientDisconnected(int idClient)
 
 bool GlobalServer::Auth(int client, QString data)
 {
+    //qDebug() << authName << authNameList;
     QString clientStr = (privilege == Admin) ? "A" : "U";
     clientStr += QString::number(client);
 
     int step = clientAuth.value(clientStr,-1);
     switch (step) {
     case clientKey:
-        if(data == crypto->Key_To_SHA256(clientStr)) {
+        //qDebug() << QCryptographicHash::hash(crypto->Get_Key().toLatin1(),QCryptographicHash::Sha256).toHex();
+        //qDebug() << crypto->Key_To_SHA256("server") << data;
+        if(data == crypto->Key_To_SHA256("server")) {
             SendToClient(client, "OK");
             clientAuth.insert(clientStr, passwordOk);
         }
@@ -48,10 +53,15 @@ bool GlobalServer::Auth(int client, QString data)
         }
         break;
     case passwordOk:
+        qDebug() << "AuthName " << authName;
         if(authName) {
+            crypto->Decrypt_Data(data,clientStr);
             if(authNameList.contains(data)) {
                 clientAuth.insert(clientStr, ready);
                 SendToClient(client, "READY");
+            }
+            else {
+                DisconnectClient(client,"Bad Name");
             }
         }
         else {
@@ -60,7 +70,7 @@ bool GlobalServer::Auth(int client, QString data)
         }
         break;
     case ready:
-        emit Receipt(clientStr,data);
+        crypto->Decrypt_Data(data, clientStr);
         return true;
         break;
     default:
@@ -93,4 +103,6 @@ void GlobalServer::SetAuthNameList(QStringList list)
         authName = true;
     }
     authNameList = list;
+
+    qDebug() << authName << authNameList;
 }

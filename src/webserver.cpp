@@ -2,14 +2,20 @@
 
 WebServer::WebServer()
 {
+    Init();
+
     #define className "WebServeur"
     type = Web;
+    SetPrivilege(User);
 
-    Init();
+    server = new QWebSocketServer("web",QWebSocketServer::NonSecureMode);
+    connect(server, &QWebSocketServer::newConnection, this, &WebServer::NewConnexion);
 }
 
 WebServer::WebServer(int priv, QString passwd, QStringList authNameList)
 {
+    Init();
+
     SetPrivilege(priv);
     SetPassword(passwd);
     SetAuthNameList(authNameList);
@@ -17,7 +23,8 @@ WebServer::WebServer(int priv, QString passwd, QStringList authNameList)
     #define className "WebServeur"
     type = Web;
 
-    Init();
+    server = new QWebSocketServer("web",QWebSocketServer::NonSecureMode);
+    connect(server, &QWebSocketServer::newConnection, this, &WebServer::NewConnexion);
 }
 
 WebServer::~WebServer()
@@ -36,8 +43,7 @@ bool WebServer::Start(int port)
 
 bool WebServer::Stop()
 {
-    QWebSocket *socket;
-    foreach (socket, client) {
+    for(QWebSocket *socket : client.values()) {
         socket->close();
         socket->deleteLater();
     }
@@ -56,7 +62,10 @@ void WebServer::NewConnexion()
         connect(socket,&QWebSocket::textMessageReceived,this,&WebServer::ReceiptData);
         connect(socket,&QWebSocket::disconnected,this,&WebServer::Disconnect);
 
-        client.insert(client.lastKey()+1,socket);
+        if(client.isEmpty())
+            client.insert(0,socket);
+        else
+            client.insert(client.lastKey()+1,socket);
     }
 }
 
@@ -98,6 +107,17 @@ bool WebServer::DisconnectClient(int idClient, QString reason)
     QWebSocket *socket = client.value(idClient);
     socket->close();
     client.remove(idClient);
+    socket->deleteLater();
+
+    emit Info(className, "Client disconnected : " + reason);
 
     return true;
+}
+
+QStringList WebServer::InfoServer()
+{
+    QStringList info = GlobalServer::InfoServer();
+    info.append(QString::number(server->serverPort()));
+    info.append(QString::number(client.count()));
+    return info;
 }

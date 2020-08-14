@@ -16,6 +16,8 @@ public:
     bool Stop() override;
     bool SendToClient(int idClient, QString data) override;
     bool DisconnectClient(int idClient, QString reason) override;
+    bool IsOnline() override { return server->isListening(); }
+    QStringList InfoServer() override;
 
 private slots:
     void NewConnexion() override;
@@ -26,6 +28,7 @@ private:
     QMap<int,QTcpSocket*> client;
     QTcpServer *server;
     quint16 dataSize;
+    QMap<int, quint16> datSize;
 };
 
 #endif // TCPSERVER_H

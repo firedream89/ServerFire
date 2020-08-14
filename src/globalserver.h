@@ -8,12 +8,16 @@ class GlobalServer : public QObject
 {
     Q_OBJECT
 
-    enum AuthStep {clientKey, passwordOk, ready};
-
 public:
+    enum NetworkError {noError, passwordError, dataError};
+    enum Privilege {Admin, User};
+    enum Type {TCP, Web};
+
     virtual bool Start(int port) = 0;
     virtual bool Stop() = 0;
-    virtual bool Reload() = 0;
+    //virtual bool Reload() = 0;
+    virtual bool IsOnline() = 0;
+    virtual QStringList InfoServer() { return QStringList(password); };
     virtual bool SendToClient(int idClient, QString data) = 0;
     virtual bool DisconnectClient(int idClient, QString reason) = 0;
     void SetCrypto(int keySize, int codeSize, int charFormat);
@@ -32,6 +36,8 @@ signals:
     void Info(QString classname, QString text);
 
 private:
+    enum AuthStep {clientKey, passwordOk, ready};
+
     bool Auth(int client, QString data);
     QMap<QString, int> clientAuth;
     int privilege;
@@ -45,12 +51,6 @@ protected:
     void ReceiptDataFromClient(int client, QString data);
     bool ClientDisconnected(int idClient);
     int type;
-
-    enum NetworkError {noError, passwordError, dataError};
-    enum Privilege {Admin, User};
-    enum Type {TCP, Web};
-
-
 };
 
 #endif // GLOBALSERVER_H
