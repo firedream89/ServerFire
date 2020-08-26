@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
 
     QString arg;
-    int type, privilege, port = 0;
+    int type, privilege, port = 0, nb = 1;
     QString ip, password, name = "";
     for(QString arg : a.arguments()) {
         if(arg.contains("type=")) {
@@ -50,9 +50,12 @@ int main(int argc, char *argv[])
         else if(arg.contains("name=")) {
             name = arg.split('=').last();
         }
+        else if(arg.contains("nb=")) {
+            nb = arg.split("=").last().toInt();
+        }
     }
 
-    for(int i=0;i<1;i++) {
+    for(int i=0;i<nb;i++) {
     runClient *c = new runClient(type,privilege,name);
     c->Connect(ip,port,password);
     }

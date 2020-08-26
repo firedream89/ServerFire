@@ -4,7 +4,8 @@ TCPServer::TCPServer()
 {
     Init();
 
-    #define className "TCPServeur"
+    #undef className
+    #define className "TCPServeur
     type = TCP;
     dataSize = 0;
     SetPrivilege(User);
@@ -21,6 +22,7 @@ TCPServer::TCPServer(int priv, QString passwd, QStringList authNameList)
     SetPassword(passwd);
     SetAuthNameList(authNameList);
 
+    #undef className
     #define className "TCPServeur"
     type = TCP;
     dataSize = 0;
@@ -58,7 +60,6 @@ void TCPServer::NewConnexion()
 {
     while(server->hasPendingConnections())
     {
-        qDebug() << "new connexion";
         QTcpSocket *newCo = server->nextPendingConnection();
         newCo->setParent(server);
 
@@ -146,7 +147,6 @@ bool TCPServer::DisconnectClient(int idClient, QString reason)
     socket->deleteLater();
 
     emit Info(className, "Client disconnected : " + reason);
-    qDebug() << "Disconnected";
 
     return true;
 }

@@ -2,15 +2,42 @@
 
 void GlobalServer::Init()
 {
+    #define className "Server"
+
     crypto = new CryptoFire();
 
     authName = false;
 }
 
-void GlobalServer::SetCrypto(int keySize, int codeSize, int charFormat)
+void GlobalServer::emitInfo(QString text)
+{
+    emit Info(className,text);
+}
+
+bool GlobalServer::SetCrypto(int keySize, int codeSize, int charFormat)
 {
     crypto = new CryptoFire(keySize, codeSize, charFormat);
-    crypto->Add_Encrypted_Key("server",password);
+    try {
+        crypto->Add_Encrypted_Key("server",password);
+        return true;
+    }
+    catch(CryptoFire::error &e) {
+        switch (e) {
+        case CryptoFire::codeSize:
+            emitInfo("Error(Crypto) : Password is too short !");
+            break;
+        case CryptoFire::sameName:
+            emitInfo("Error(Crypto) : Name already exist !");
+            break;
+        case CryptoFire::badKey:
+            emitInfo("Error(Crypto) : Key not valid !");
+            break;
+        default:
+            emitInfo("Error(Crypto) : Unknown error");
+        }
+        Stop();
+        return false;
+    }
 }
 
 void GlobalServer::ReceiptDataFromClient(int client, QString data)
@@ -30,20 +57,22 @@ bool GlobalServer::ClientDisconnected(int idClient)
     QString clientStr = (privilege == Admin) ? "A" : "U";
     clientStr += QString::number(idClient);
     clientAuth.remove(clientStr);
+    emitInfo("Client " + clientStr + " disconnected");
     return crypto->Remove_Encrypted_Key(clientStr);
 }
 
 bool GlobalServer::Auth(int client, QString data)
 {
-    //qDebug() << authName << authNameList;
+    if(data.contains("Error key not found")) {
+        return false;
+    }
+
     QString clientStr = (privilege == Admin) ? "A" : "U";
     clientStr += QString::number(client);
 
     int step = clientAuth.value(clientStr,-1);
     switch (step) {
     case clientKey:
-        //qDebug() << QCryptographicHash::hash(crypto->Get_Key().toLatin1(),QCryptographicHash::Sha256).toHex();
-        //qDebug() << crypto->Key_To_SHA256("server") << data;
         if(data == crypto->Key_To_SHA256("server")) {
             SendToClient(client, "OK");
             clientAuth.insert(clientStr, passwordOk);
@@ -53,11 +82,11 @@ bool GlobalServer::Auth(int client, QString data)
         }
         break;
     case passwordOk:
-        qDebug() << "AuthName " << authName;
+        crypto->Decrypt_Data(data,clientStr);
         if(authName) {
-            crypto->Decrypt_Data(data,clientStr);
             if(authNameList.contains(data)) {
                 clientAuth.insert(clientStr, ready);
+                emitInfo(data + "(" + clientStr + ") Authentified successfully");
                 SendToClient(client, "READY");
             }
             else {
@@ -66,6 +95,7 @@ bool GlobalServer::Auth(int client, QString data)
         }
         else {
             clientAuth.insert(clientStr, ready);
+            emitInfo(data + "(" + clientStr + ") Authentified successfully");
             SendToClient(client, "READY");
         }
         break;
@@ -75,7 +105,22 @@ bool GlobalServer::Auth(int client, QString data)
         break;
     default:
         //newConnexion
-        if(!crypto->Add_Encrypted_Key(clientStr,password,data)) {
+        try {
+            crypto->Add_Encrypted_Key(clientStr,password,data);
+        } catch (CryptoFire::error &e) {
+            switch (e) {
+            case CryptoFire::codeSize:
+                emitInfo("Error(Crypto) : Password is too short !");
+                break;
+            case CryptoFire::sameName:
+                emitInfo("Error(Crypto) : Name already exist !");
+                break;
+            case CryptoFire::badKey:
+                emitInfo("Error(Crypto) : Key not valid !");
+                break;
+            default:
+                emitInfo("Error(Crypto) : Unknown error");
+            }
             DisconnectClient(client,"Fail to encrypt key !");
             return false;
         }
@@ -84,6 +129,7 @@ bool GlobalServer::Auth(int client, QString data)
         if(SendToClient(client,key)) {
             clientAuth.insert(clientStr,clientKey);
         }
+        emitInfo("Client " + clientStr + " connected");
     }
     return false;
 }

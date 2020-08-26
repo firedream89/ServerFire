@@ -47,7 +47,7 @@ void ServerFire::Test()
         SetCrypto(100,8,UTF16);
         std::cout << "Stop server user " << StopServer(GlobalServer::User) << "\n";
         std::cout << "Server user is online : " << IsOnline(GlobalServer::User) << "\n";
-        std::cout << "Starting Server user(TCP) :" << RunServer(GlobalServer::TCP, GlobalServer::User, 52000, "user", QStringList("Test")) << "\n";
+        std::cout << "Starting Server user(TCP) :" << RunServer(GlobalServer::TCP, GlobalServer::User, 52000, "useruser", QStringList("Test")) << "\n";
         std::cout << "Server user is online : " << IsOnline(GlobalServer::User) << "\n";
         pos++;
         break;
@@ -72,39 +72,28 @@ void ServerFire::TestReceipt(QString client, QString data)
 
 bool ServerFire::RunServer(int type, int privilege, int port, QString password, QStringList authNameList)
 {
+    GlobalServer *server;
     if(type == GlobalServer::TCP) {
-        if(privilege == GlobalServer::Admin) {
-            adminServer = new TCPServer(privilege,password,authNameList);
-            adminServer->SetCrypto(cryptoOption.at(0),cryptoOption.at(1),cryptoOption.at(2));
-            connect(adminServer, &TCPServer::Receipt, this, &ServerFire::ReceiptData);
-            connect(adminServer, &TCPServer::Info, this, &ServerFire::Info);
-            return adminServer->Start(port);
-        }
-        else {
-            userServer = new TCPServer(privilege,password,authNameList);
-            userServer->SetCrypto(cryptoOption.at(0),cryptoOption.at(1),cryptoOption.at(2));
-            connect(userServer, &TCPServer::Receipt, this, &ServerFire::ReceiptData);
-            connect(userServer, &TCPServer::Info, this, &ServerFire::Info);
-            return userServer->Start(port);
-        }
+        server = new TCPServer(privilege,password,authNameList);
+        connect(server, &TCPServer::Receipt, this, &ServerFire::ReceiptData);
+        connect(server, &TCPServer::Info, this, &ServerFire::Info);
     }
     else {
-        if(privilege == GlobalServer::Admin) {
-            adminServer = new WebServer(privilege,password,authNameList);
-            adminServer->SetCrypto(cryptoOption.at(0),cryptoOption.at(1),cryptoOption.at(2));
-            connect(adminServer, &WebServer::Receipt, this, &ServerFire::ReceiptData);
-            connect(adminServer, &WebServer::Info, this, &ServerFire::Info);
-            return adminServer->Start(port);
-        }
-        else {
-            userServer = new WebServer(privilege,password,authNameList);
-            userServer->SetCrypto(cryptoOption.at(0),cryptoOption.at(1),cryptoOption.at(2));
-            connect(userServer, &WebServer::Receipt, this, &ServerFire::ReceiptData);
-            connect(userServer, &WebServer::Info, this, &ServerFire::Info);
-            return userServer->Start(port);
-        }
+        server = new WebServer(privilege,password,authNameList);
+        connect(server, &WebServer::Receipt, this, &ServerFire::ReceiptData);
+        connect(server, &WebServer::Info, this, &ServerFire::Info);
     }
-    return false;
+    if(!server->SetCrypto(cryptoOption.at(0),cryptoOption.at(1),cryptoOption.at(2))) {
+        return false;
+    }
+
+    if(privilege == GlobalServer::Admin) {
+        adminServer = server;
+    }
+    else {
+        userServer = server;
+    }
+    return server->Start(port);
 }
 
 bool ServerFire::StopServer(int privilege)

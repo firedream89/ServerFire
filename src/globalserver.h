@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <../../CryptoFire/src/cryptofire.h>
+#include <exception>
 
 class GlobalServer : public QObject
 {
@@ -20,7 +21,7 @@ public:
     virtual QStringList InfoServer() { return QStringList(password); };
     virtual bool SendToClient(int idClient, QString data) = 0;
     virtual bool DisconnectClient(int idClient, QString reason) = 0;
-    void SetCrypto(int keySize, int codeSize, int charFormat);
+    bool SetCrypto(int keySize, int codeSize, int charFormat);
     void SetAuthName(bool activate) { authName = activate; }
     void SetPassword(QString passwd) { password = passwd; }
     void SetPrivilege(int priv) { if(priv == Admin || priv == User) privilege = priv; }
@@ -35,7 +36,7 @@ signals:
     void Receipt(QString client, QString data);
     void Info(QString classname, QString text);
 
-private:
+private:  
     enum AuthStep {clientKey, passwordOk, ready};
 
     bool Auth(int client, QString data);
@@ -48,6 +49,7 @@ private:
 
 protected:
     void Init();
+    void emitInfo(QString text);
     void ReceiptDataFromClient(int client, QString data);
     bool ClientDisconnected(int idClient);
     int type;

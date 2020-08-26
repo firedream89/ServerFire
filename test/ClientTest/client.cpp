@@ -2,7 +2,7 @@
 
 client::client(int t, int priv, QString cname)
 {
-    SetCrypto(50,4,UTF8);
+    SetCrypto(100,8,UTF16);
 
     name = cname;
     type = t;
