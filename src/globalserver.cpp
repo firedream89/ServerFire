@@ -35,7 +35,6 @@ bool GlobalServer::SetCrypto(int keySize, int codeSize, int charFormat)
         default:
             emitInfo("Error(Crypto) : Unknown error");
         }
-        Stop();
         return false;
     }
 }
@@ -149,6 +148,4 @@ void GlobalServer::SetAuthNameList(QStringList list)
         authName = true;
     }
     authNameList = list;
-
-    qDebug() << authName << authNameList;
 }

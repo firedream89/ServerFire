@@ -29,3 +29,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     ../../../CryptoFire/src/cryptofire.h \
     client.h
+
+unix:!macx: LIBS += -L$$PWD/../../../CryptoFire/Lib/Linux/ -lCryptoFire
+
+INCLUDEPATH += $$PWD/../../../CryptoFire/Lib/Linux
+DEPENDPATH += $$PWD/../../../CryptoFire/Lib/Linux

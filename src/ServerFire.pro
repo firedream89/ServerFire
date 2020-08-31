@@ -4,6 +4,7 @@ QT += websockets
 
 TEMPLATE = lib
 DEFINES += SERVERFIRE_LIBRARY
+VERSION = 1.0.1
 
 CONFIG += c++11
 
@@ -30,7 +31,7 @@ unix {
 }
 !isEmpty(target.path): INSTALLS += target
 
-unix:!macx: LIBS += -L$$PWD/../../CryptoFire/build-CryptoFire-RPI-Release/ -lCryptoFire
+unix:!macx: LIBS += -L$$PWD/../../CryptoFire/Lib/RPI/ -lCryptoFire
 
-INCLUDEPATH += $$PWD/../../CryptoFire/build-CryptoFire-RPI-Release
-DEPENDPATH += $$PWD/../../CryptoFire/build-CryptoFire-RPI-Release
+INCLUDEPATH += $$PWD/../../CryptoFire/RPI/Lib
+DEPENDPATH += $$PWD/../../CryptoFire/RPI/Lib

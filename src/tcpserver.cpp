@@ -5,7 +5,7 @@ TCPServer::TCPServer()
     Init();
 
     #undef className
-    #define className "TCPServeur
+    #define className "TCPServeur"
     type = TCP;
     dataSize = 0;
     SetPrivilege(User);
