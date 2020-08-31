@@ -1,4 +1,4 @@
-﻿#include "tcpserver.h"
+#include "tcpserver.h"
 
 TCPServer::TCPServer()
 {

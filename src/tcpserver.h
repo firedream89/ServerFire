@@ -1,7 +1,7 @@
 #ifndef TCPSERVER_H
 #define TCPSERVER_H
 
-#include <globalserver.h>
+#include "globalserver.h"
 #include <QtNetwork>
 
 class TCPServer : public GlobalServer

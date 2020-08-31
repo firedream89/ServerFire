@@ -1,11 +1,12 @@
 #ifndef SERVERFIRE_H
 #define SERVERFIRE_H
 
+#include "ServerFire_global.h"
 #include <QObject>
-#include <tcpserver.h>
-#include <webserver.h>
+#include "tcpserver.h"
+#include "webserver.h"
 
-class ServerFire : public QObject
+class SERVERFIRE_EXPORT ServerFire : public QObject
 {
     Q_OBJECT
 

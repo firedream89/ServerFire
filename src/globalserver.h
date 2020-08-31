@@ -2,7 +2,7 @@
 #define GLOBALSERVER_H
 
 #include <QObject>
-#include <../../CryptoFire/src/cryptofire.h>
+#include "/home/kevin/test/CryptoFire/src/cryptofire.h"
 #include <exception>
 
 class GlobalServer : public QObject
@@ -36,7 +36,7 @@ signals:
     void Receipt(QString client, QString data);
     void Info(QString classname, QString text);
 
-private:  
+private:
     enum AuthStep {clientKey, passwordOk, ready};
 
     bool Auth(int client, QString data);
