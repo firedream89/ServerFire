@@ -88,6 +88,7 @@ void TCPServer::Disconnect()
 
 bool TCPServer::SendToClient(int idClient, QString data)
 {
+
     QTcpSocket *socket = client.value(idClient);
     if(!socket)
         return false;

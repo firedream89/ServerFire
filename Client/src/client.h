@@ -1,13 +1,14 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
+#include "Client_global.h"
 #include <QObject>
-#include <QTcpSocket>
+#include "QTcpSocket"
 #include <QDataStream>
-#include <QWebSocket>
-#include <../../../CryptoFire/src/cryptofire.h>
+#include <QtWebSockets/QWebSocket>
+#include "../../../../CryptoFire/src/cryptofire.h"
 
-class client : public QObject
+class CLIENT_EXPORT client : public QObject
 {
     Q_OBJECT
 

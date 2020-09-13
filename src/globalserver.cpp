@@ -84,18 +84,18 @@ bool GlobalServer::Auth(int client, QString data)
         crypto->Decrypt_Data(data,clientStr);
         if(authName) {
             if(authNameList.contains(data)) {
-                clientAuth.insert(clientStr, ready);
-                emitInfo(data + "(" + clientStr + ") Authentified successfully");
                 SendToClient(client, "READY");
+                clientAuth.insert(clientStr, ready);
+                emitInfo(data + "(" + clientStr + ") Authentified successfully");          
             }
             else {
                 DisconnectClient(client,"Bad Name");
             }
         }
         else {
-            clientAuth.insert(clientStr, ready);
-            emitInfo(data + "(" + clientStr + ") Authentified successfully");
             SendToClient(client, "READY");
+            clientAuth.insert(clientStr, ready);
+            emitInfo(data + "(" + clientStr + ") Authentified successfully");    
         }
         break;
     case ready:
@@ -148,4 +148,13 @@ void GlobalServer::SetAuthNameList(QStringList list)
         authName = true;
     }
     authNameList = list;
+}
+
+void GlobalServer::EncryptData(int idClient, QString &data)
+{
+    QString clientStr = (privilege == Admin) ? "A" : "U";
+    clientStr += QString::number(idClient);
+
+    if(clientAuth.value(clientStr) == ready)
+        crypto->Encrypt_Data(data,"server");
 }
