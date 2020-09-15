@@ -2,7 +2,7 @@
 #define GLOBALSERVER_H
 
 #include <QObject>
-#include "/home/kevin/test/CryptoFire/src/cryptofire.h"
+#include "../../CryptoFire/src/cryptofire.h"
 #include <exception>
 
 class GlobalServer : public QObject
