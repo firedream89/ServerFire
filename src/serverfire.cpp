@@ -3,6 +3,7 @@
 ServerFire::ServerFire(QObject *parent) : QObject(parent)
 {
     cryptoOption = {50, 4, UTF8};
+    userServer = adminServer = new TCPServer;
 }
 
 void ServerFire::Test()

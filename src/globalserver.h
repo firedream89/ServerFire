@@ -2,7 +2,7 @@
 #define GLOBALSERVER_H
 
 #include <QObject>
-#include <../../CryptoFire/src/cryptofire.h>
+#include "/home/kevin/test/CryptoFire/src/cryptofire.h"
 #include <exception>
 
 class GlobalServer : public QObject
@@ -18,7 +18,7 @@ public:
     virtual bool Stop() = 0;
     //virtual bool Reload() = 0;
     virtual bool IsOnline() = 0;
-    virtual QStringList InfoServer() { return QStringList(password); };
+    virtual QStringList InfoServer() { return QStringList(password); }
     virtual bool SendToClient(int idClient, QString data) = 0;
     virtual bool DisconnectClient(int idClient, QString reason) = 0;
     bool SetCrypto(int keySize, int codeSize, int charFormat);
@@ -27,6 +27,7 @@ public:
     void SetPrivilege(int priv) { if(priv == Admin || priv == User) privilege = priv; }
     void SetAuthNameList(QStringList list);
     bool AddAuthName(QString name);
+    void EncryptData(int idClient, QString &data);
 
 private slots:
     virtual void NewConnexion() = 0;
@@ -36,7 +37,7 @@ signals:
     void Receipt(QString client, QString data);
     void Info(QString classname, QString text);
 
-private:  
+private:
     enum AuthStep {clientKey, passwordOk, ready};
 
     bool Auth(int client, QString data);

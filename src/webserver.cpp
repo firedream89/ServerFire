@@ -86,6 +86,8 @@ void WebServer::Disconnect()
 
 bool WebServer::SendToClient(int idClient, QString data)
 {
+    EncryptData(idClient,data);
+
     QWebSocket *socket = client.value(idClient);
     if(!socket)
         return false;

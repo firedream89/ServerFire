@@ -2,9 +2,10 @@ QT -= gui
 QT += network
 QT += websockets
 
+VERSION = 1.0
+
 TEMPLATE = lib
-DEFINES += SERVERFIRE_LIBRARY
-VERSION = 1.0.1
+DEFINES += CLIENT_LIBRARY
 
 CONFIG += c++11
 
@@ -13,25 +14,14 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    globalserver.cpp \
-    serverfire.cpp \
-    tcpserver.cpp \
-    webserver.cpp
+    client.cpp
 
 HEADERS += \
-    ServerFire_global.h \
-    globalserver.h \
-    serverfire.h \
-    tcpserver.h \
-    webserver.h
+    Client_global.h \
+    client.h
 
 # Default rules for deployment.
 unix {
     target.path = /usr/lib
 }
 !isEmpty(target.path): INSTALLS += target
-
-unix:!macx: LIBS += -L$$PWD/../../CryptoFire/Lib/RPI/ -lCryptoFire
-
-INCLUDEPATH += $$PWD/../../CryptoFire/RPI/Lib
-DEPENDPATH += $$PWD/../../CryptoFire/RPI/Lib

@@ -1,11 +1,11 @@
-﻿#include "tcpserver.h"
+#include "tcpserver.h"
 
 TCPServer::TCPServer()
 {
     Init();
 
     #undef className
-    #define className "TCPServeur
+    #define className "TCPServeur"
     type = TCP;
     dataSize = 0;
     SetPrivilege(User);
@@ -88,6 +88,7 @@ void TCPServer::Disconnect()
 
 bool TCPServer::SendToClient(int idClient, QString data)
 {
+
     QTcpSocket *socket = client.value(idClient);
     if(!socket)
         return false;

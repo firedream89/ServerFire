@@ -26,7 +26,7 @@ client::client(int t, int priv, QString cname)
 bool client::Connect(QString ip, int port, QString passwd)
 {
     crypto = new CryptoFire(cryptoOption.at(0), cryptoOption.at(1), cryptoOption.at(2));
-    crypto->Add_Encrypted_Key("client",passwd);
+    qDebug() << crypto->Add_Encrypted_Key("client",passwd);
 
     password = passwd;
     switch (type) {
@@ -48,8 +48,6 @@ void client::Disconnect()
 
 void client::Auth(QString data)
 {
-    QString test = data;
-    crypto->Decrypt_Data(test,"client");
     switch(AuthLvl) {
     case unhautorised:
         SendToServer(crypto->Get_Key());
@@ -77,6 +75,7 @@ void client::Auth(QString data)
         break;
     case autorised:
         crypto->Decrypt_Data(data,"server");
+        qDebug() << data;
         emit ReceiptData(data);
     }
 }
@@ -147,6 +146,8 @@ void client::SetCrypto(int keySize, int codeSize, int charFormat)
 
 void client::SendToServer(QString data)
 {
+    qDebug() << "Send data : " << data;
+
     if(AuthLvl == autorised)
         crypto->Encrypt_Data(data,"client");
 

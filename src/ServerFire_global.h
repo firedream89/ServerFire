@@ -1,0 +1,12 @@
+#ifndef SERVERFIRE_GLOBAL_H
+#define SERVERFIRE_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(SERVERFIRE_LIBRARY)
+#  define SERVERFIRE_EXPORT Q_DECL_EXPORT
+#else
+#  define SERVERFIRE_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // SERVERFIRE_GLOBAL_H
