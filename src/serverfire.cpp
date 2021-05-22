@@ -126,6 +126,7 @@ bool ServerFire::SendDataToClient(QString clientStr, QString data)
         return adminServer->SendToClient(client,data);
         break;
     case GlobalServer::User:
+        qDebug() << "send data : " << data;
         return userServer->SendToClient(client,data);
     }
 

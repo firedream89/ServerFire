@@ -34,13 +34,13 @@ private slots:
     virtual void Disconnect() = 0;
 
 signals:
-    void Receipt(QString client, QString data);
+    void Receipt(QString client, QString &data);
     void Info(QString classname, QString text);
 
 private:
     enum AuthStep {clientKey, passwordOk, ready};
 
-    bool Auth(int client, QString data);
+    bool Auth(int client, QString &data);
     QMap<QString, int> clientAuth;
     int privilege;
     CryptoFire *crypto;

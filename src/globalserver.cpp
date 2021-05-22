@@ -46,7 +46,6 @@ void GlobalServer::ReceiptDataFromClient(int client, QString data)
 
     QString clientStr = (privilege == Admin) ? "A" : "U";
     clientStr += QString::number(client);
-    crypto->Decrypt_Data(data,clientStr);
 
     emit Receipt(clientStr, data);
 }
@@ -60,18 +59,21 @@ bool GlobalServer::ClientDisconnected(int idClient)
     return crypto->Remove_Encrypted_Key(clientStr);
 }
 
-bool GlobalServer::Auth(int client, QString data)
+bool GlobalServer::Auth(int client, QString &data)
 {
     if(data.contains("Error key not found")) {
         return false;
     }
 
+    qDebug() << "data brute : " << data;
     QString clientStr = (privilege == Admin) ? "A" : "U";
     clientStr += QString::number(client);
 
     int step = clientAuth.value(clientStr,-1);
+    qDebug() << "step : " << step;
     switch (step) {
     case clientKey:
+        qDebug() << data << "|" << crypto->Key_To_SHA256("server");
         if(data == crypto->Key_To_SHA256("server")) {
             SendToClient(client, "OK");
             clientAuth.insert(clientStr, passwordOk);
@@ -99,7 +101,9 @@ bool GlobalServer::Auth(int client, QString data)
         }
         break;
     case ready:
+        qDebug() << clientStr;
         crypto->Decrypt_Data(data, clientStr);
+        qDebug() << "Decrypted : " << data;
         return true;
         break;
     default:
