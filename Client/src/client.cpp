@@ -44,10 +44,13 @@ void client::Disconnect()
 {
     tcp->disconnectFromHost();
     web->close(QWebSocketProtocol::CloseCodeNormal);
+
+    emit disconnected();
 }
 
 void client::Auth(QString data)
 {
+    qDebug() << "Auth : " << AuthLvl;
     switch(AuthLvl) {
     case unhautorised:
         SendToServer(crypto->Get_Key());

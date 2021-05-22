@@ -25,3 +25,12 @@ unix {
     target.path = /usr/lib
 }
 !isEmpty(target.path): INSTALLS += target
+
+unix:!macx: LIBS += -L$$PWD/../../../CryptoFire/Lib/RPI/ -lCryptoFire
+unix:!macx: LIBS += -L$$PWD/../../../CryptoFire/Lib/android-build/libs/x86/ -lCryptoFire
+unix:!macx: LIBS += -L$$PWD/../../../CryptoFire/Lib/Linux/ -lCryptoFire
+
+
+unix:INCLUDEPATH += $$PWD/../../../CryptoFire/RPI/Lib
+unix:DEPENDPATH += $$PWD/../../../CryptoFire/RPI/Lib
+

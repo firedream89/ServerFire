@@ -3,10 +3,9 @@
 
 #include "Client_global.h"
 #include <QObject>
-#include "QTcpSocket"
 #include <QDataStream>
 #include <QtWebSockets/QWebSocket>
-#include "../../../../CryptoFire/src/cryptofire.h"
+#include "../../../CryptoFire/src/cryptofire.h"
 
 class CLIENT_EXPORT client : public QObject
 {
@@ -35,6 +34,7 @@ signals:
     void Ready();
     void close(int ret);
     void ReceiptData(QString data);
+    void disconnected();
 
 private:
     void Auth(QString data);
